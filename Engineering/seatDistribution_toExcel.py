@@ -50,7 +50,7 @@ def csvtoexcel(masterCSV_1, masterCSV_2, collegecode, collegename, universityNam
 		csv1.write(','.join(c) + '\n')
 	csv1.close();
 	csv2 = open("csv2.csv", "w")
-	csv2.write("Open-G,Open-L,SC-G,SC-L,ST-G,ST-L,VJ/DT-G,VJ/DT-L,NTB-G,NTB-L,NTC-G,NTC-L,NTD-G,NTD-l,OBC-G,OBC-L,PH1,PH2,PH3,PHc,DF,TOTAL\n\n")		
+	csv2.write("Open-G,Open-L,SC-G,SC-L,ST-G,ST-L,VJ/DT-G,VJ/DT-L,NTB-G,NTB-L,NTC-G,NTC-L,NTD-G,NTD-l,OBC-G,OBC-L,PH1,PH2,PH3,PHc,DF,TOTAL,College Code,Choice Code\n\n")		
 	r = 0
 	while r < len(masterCSV_2):
 		csv2.write(','.join(masterCSV_2[r]) + '\n')
@@ -142,16 +142,16 @@ for i in range(2, 386):
 				universityName = getUniversity(i)
 			line += 1;
 			temp_masterCSV_1 = [None]*11 #this will store civil, it comp and all
-			temp_masterCSV_2_HU = ['Nil']*22 #this will store seat distribution of civil it comp
-			temp_masterCSV_2_OHU = ['Nil']*22 #this will store seat distribution of civil it comp
-			temp_masterCSV_2_stateLevel = ['Nil']*22 #this will store seat distribution of civil it comp
+			temp_masterCSV_2_HU = ['Nil']*24 #this will store seat distribution of civil it comp
+			temp_masterCSV_2_OHU = ['Nil']*24 #this will store seat distribution of civil it comp
+			temp_masterCSV_2_stateLevel = ['Nil']*24 #this will store seat distribution of civil it comp
 			#print(alllines[line].strip())
 			alllines[line] = alllines[line].strip()
-			flag = 0
-			flag1 = 0
+			statusNameOnNextLineCheck = 0
+			withinLineLimit = 0
 			if "Rashtrasant Tukadoji Maharaj" in alllines[line]: #check if the status name of college is not in 2 lines
 				statusName = alllines[line] + ' '
-				flag = 1
+				statusNameOnNextLineCheck = 1
 				line += 1
 				alllines[line] = alllines[line].strip()
 			elif not "CAP Seats" in alllines[line] : #check if the name of college is not in 2 lines
@@ -160,9 +160,9 @@ for i in range(2, 386):
 				alllines[line] = alllines[line].strip()
 			querystring = 'CAP Seats:' #getting the capseats and the status
 			capseats = alllines[line][alllines[line].find(querystring) + len(querystring):].strip()
-			if(flag == 1):
+			if(statusNameOnNextLineCheck == 1):
 				statusName += alllines[line][:alllines[line].find(querystring)].strip()
-				flag = 0
+				statusNameOnNextLineCheck = 0
 			else:
 				statusName = alllines[line][:alllines[line].find(querystring)].strip()
 			line += 1
@@ -182,6 +182,13 @@ for i in range(2, 386):
 			temp_masterCSV_1[4] = templine[len(templine)-3] #AI
 			temp_masterCSV_1[3] = templine[len(templine)-4] #MSCAP
 			temp_masterCSV_1[2] = templine[len(templine)-5] #SI
+			#Below lines will make last 2 columns of sheet 2 as colleg code and choice code
+			temp_masterCSV_2_HU[22] = collegecode
+			temp_masterCSV_2_HU[23] = temp_masterCSV_1[0]
+			temp_masterCSV_2_OHU[22] = collegecode
+			temp_masterCSV_2_OHU[23] = temp_masterCSV_1[0]
+			temp_masterCSV_2_stateLevel[22] = collegecode
+			temp_masterCSV_2_stateLevel[23] = temp_masterCSV_1[0]
 			if "#" in templine[1]:
 				temp_masterCSV_1[1] = ' '.join(templine[2: len(templine)-5]) #Course Name(civil etc)
 			else:		
@@ -197,7 +204,7 @@ for i in range(2, 386):
 				if line < len(alllines):
 					origline = alllines[line]
 					alllines[line] = alllines[line].strip().split()
-					flag1 = 1;
+					withinLineLimit = 1;
 
 			if(line < len(alllines) and alllines[line][0] == 'OHU'):
 				for k in range(0, 22):
@@ -206,7 +213,7 @@ for i in range(2, 386):
 				if line < len(alllines):
 					origline = alllines[line]
 					alllines[line] = alllines[line].strip().split()
-					flag1 = 1;
+					withinLineLimit = 1;
 
 			if(line < len(alllines) and alllines[line][0] == 'State'):
 				for k in range(0, 22):
@@ -215,17 +222,17 @@ for i in range(2, 386):
 				if line < len(alllines):
 					origline = alllines[line]
 					alllines[line] = alllines[line].strip().split()
-					flag1 = 1;
+					withinLineLimit = 1;
 					
-			if(line < len(alllines) and flag1 == 1 and "TFWS" in alllines[line]):
+			if(line < len(alllines) and withinLineLimit == 1 and "TFWS" in alllines[line]):
 				temp_masterCSV_1[9] = alllines[line][2][5:] 
 				temp_masterCSV_1[10] = alllines[line][3][6:]
-				flag1 = 0
+				withinLineLimit = 0
 			else:
 				if(line < len(alllines)):
 					alllines[line] = origline
 				line -= 1
-				flag1 = 0
+				withinLineLimit = 0
 				temp_masterCSV_1[9] = 'Nil' 
 				temp_masterCSV_1[10] = 'Nil'
 			#print(collegecode, '\n', collegename, '\n', universityName)

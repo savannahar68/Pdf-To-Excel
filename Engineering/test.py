@@ -4,16 +4,18 @@ import os
 import sys
 import re
 
-'''
+
 filename = 'Seat Distribution.pdf'
 with open(filename, 'rb') as f:
 	pdf = pdftotext.PDF(f)
 
 print(len(pdf))
-print(pdf[2], pdf[385])
-print(pdf[6])
-'''
+print(pdf[2])
+#print(pdf[6])
 
+with open('abc.txt', 'w') as a:
+	a.write(pdf[2])
+'''
 filename = 'Seat Distribution.pdf'
 with open(filename, "rb") as f:
 	pdf = pdftotext.PDF(f)
@@ -53,7 +55,7 @@ for i in range(71, 72):
 
 '''
 #new version
-
+'''
 import pdftotext
 import pandas as pd
 import os
